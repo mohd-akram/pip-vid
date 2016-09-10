@@ -1,0 +1,15 @@
+{
+  "title": "PiP Video",
+  "name": "pip-vid",
+  "version": "0.0.1",
+  "description": "PiP for YouTube videos.",
+  "main": "index.js",
+  "author": "Mohamed Akram",
+  "engines": {
+    "firefox": ">=38.0a1"
+  },
+  "license": "MIT",
+  "keywords": [
+    "jetpack"
+  ]
+}
