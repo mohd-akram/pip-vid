@@ -1,6 +1,9 @@
-var controls = document.getElementsByClassName('ytp-right-controls')[0];
+function addButton() {
+  var controls = document.getElementsByClassName('ytp-right-controls')[0];
 
-if (controls) {
+  if (!controls)
+    return false;
+
   var button = document.createElement('button');
   button.className = 'ytp-button'
   button.title = 'Picture-in-picture'
@@ -31,4 +34,24 @@ if (controls) {
   };
 
   controls.appendChild(button);
+
+  return true;
+}
+
+if (!addButton()) {
+  let player = document.getElementById('player');
+  if (player) {
+    let observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        mutation.addedNodes.forEach(function(node) {
+          if (node.id == 'movie_player') {
+            observer.disconnect();
+            addButton();
+          }
+        });
+      });  
+    });
+    observer.observe(player, {childList: true, subtree: true});
+    setTimeout(function(){ observer.disconnect(); }, 10000);
+  }
 }

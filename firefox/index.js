@@ -1,4 +1,3 @@
-const tabs = require('sdk/tabs');
 const { PageMod } = require('sdk/page-mod');
 const { open } = require('sdk/window/utils');
 const { window: { screen }} = require('sdk/addon/window');
@@ -109,7 +108,6 @@ PageMod({
   onAttach: function(worker) {
     worker.port.on('pip', function(videoInfo) {
       let { videoId, time } = videoInfo;
-      let url = tabs.activeTab.url;
       openVideo(videoId, time);
     });
   }
