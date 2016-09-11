@@ -111,11 +111,12 @@ function openVideo(videoId, time, width, height) {
   );
 }
 
+let video = null;
+
 PageMod({
   include: 'https://www.youtube.com/*',
   contentScriptFile: './pip.js',
   onAttach: function(worker) {
-    let video = null;
     worker.port.on('pip', function(videoInfo) {
       let { videoId, time, width, height } = videoInfo;
       let isNew = !video || video.closed;
