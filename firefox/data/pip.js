@@ -31,10 +31,13 @@ function addButton() {
     button.style.cursor = 'progress';
     let ytplayer = player.getElementsByClassName('html5-video-player')[0]
                          .wrappedJSObject;
+    let video = player.getElementsByTagName('video')[0];
     ytplayer.pauseVideo();
     self.port.emit('pip', {videoId: ytplayer.getVideoData()['video_id'],
                            time: ytplayer.getCurrentTime(),
-                           volume: ytplayer.getVolume()});
+                           volume: ytplayer.getVolume(),
+                           width: video.offsetWidth,
+                           height: video.offsetHeight});
   };
 
   controls.appendChild(button);

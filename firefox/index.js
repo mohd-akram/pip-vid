@@ -2,19 +2,20 @@ const { PageMod } = require('sdk/page-mod');
 const { open } = require('sdk/window/utils');
 const { window: { screen } } = require('sdk/addon/window');
 
-const windowWidth = 448;
-const windowHeight = 273;
 const resizeFactor = 1.1;
 
 function getVideoHTML(videoId, time) {
   time = Math.round(time);
   return `<iframe id="ytplayer" type="text/html"\
-    width="${windowWidth}" height="${windowHeight}"\
     src="https://www.youtube.com/embed/${videoId}?autoplay=1&start=${time}"\
     frameborder="0" allowfullscreen></iframe>`
 }
 
-function openVideo(videoId, time) {
+function openVideo(videoId, time, width, height) {
+  let aspectRatio = width / height;
+  width = 432;
+  height = width / aspectRatio;
+
   return open(
     `data:text/html;charset=utf-8,
     <!DOCTYPE html>
@@ -92,11 +93,11 @@ function openVideo(videoId, time) {
     {
       name: 'PiP',
       features: {
-        width: windowWidth,
-        height: windowHeight,
+        width: width,
+        height: height,
         popup: true,
-        top: screen.availHeight - windowHeight,
-        left: screen.availWidth - windowWidth
+        top: screen.availHeight - height,
+        left: screen.availWidth - width
       }
     }
   );
@@ -108,9 +109,9 @@ PageMod({
   onAttach: function(worker) {
     let video = null;
     worker.port.on('pip', function(videoInfo) {
-      let { videoId, time } = videoInfo;
+      let { videoId, time, width, height } = videoInfo;
       let isNew = !video || video.closed;
-      video = openVideo(videoId, time);
+      video = openVideo(videoId, time, width, height);
       let callback = function() { worker.port.emit('done'); };
       if (isNew) video.onload = callback;
       else video.onunload = callback;
