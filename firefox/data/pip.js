@@ -1,5 +1,7 @@
+let player = document.getElementById('player');
+
 function addButton() {
-  let controls = document.getElementsByClassName('ytp-right-controls')[0];
+  let controls = player.getElementsByClassName('ytp-right-controls')[0];
 
   if (!controls)
     return false;
@@ -27,11 +29,12 @@ function addButton() {
 
   button.onclick = function() {
     button.style.cursor = 'progress';
-    let player = document.getElementById('movie_player').wrappedJSObject;
-    player.pauseVideo();
-    self.port.emit('pip', {videoId: player.getVideoData()['video_id'],
-                           time: player.getCurrentTime(),
-                           volume: player.getVolume()});
+    let ytplayer = player.getElementsByClassName('html5-video-player')[0]
+                         .wrappedJSObject;
+    ytplayer.pauseVideo();
+    self.port.emit('pip', {videoId: ytplayer.getVideoData()['video_id'],
+                           time: ytplayer.getCurrentTime(),
+                           volume: ytplayer.getVolume()});
   };
 
   controls.appendChild(button);
@@ -41,20 +44,17 @@ function addButton() {
   return true;
 }
 
-if (!addButton()) {
-  let player = document.getElementById('player');
-  if (player) {
-    let observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
-        mutation.addedNodes.forEach(function(node) {
-          if (node.id == 'movie_player') {
-            observer.disconnect();
-            addButton();
-          }
-        });
-      });  
-    });
-    observer.observe(player, {childList: true, subtree: true});
-    setTimeout(function() { observer.disconnect(); }, 10000);
-  }
+if (player && !addButton()) {
+  let observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      mutation.addedNodes.forEach(function(node) {
+        if (node.classList.contains('html5-video-player')) {
+          observer.disconnect();
+          addButton();
+        }
+      });
+    });  
+  });
+  observer.observe(player, {childList: true, subtree: true});
+  setTimeout(function() { observer.disconnect(); }, 10000);
 }
