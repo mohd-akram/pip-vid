@@ -75,8 +75,8 @@ function openVideo(videoId, time, width, height) {
                             window.innerHeight / resizeFactor);
           };
           snap.onclick = function() {
-            window.moveTo(window.screen.availWidth - window.innerWidth,
-                          window.screen.availHeight - window.innerHeight);
+            window.moveTo(screen.availWidth - window.innerWidth,
+                          screen.availHeight - window.innerHeight);
           };
           document.onmousemove = function(e) {
             if (isDragging) {
@@ -86,6 +86,14 @@ function openVideo(videoId, time, width, height) {
           document.onmouseup = function() {
             isDragging = false;
           };
+          window.resizeTo(window.innerWidth,
+                          window.innerWidth / ${aspectRatio});
+          window.moveTo(
+            Math.max(0, Math.min(screen.availWidth - window.innerWidth,
+                                 window.screenX)),
+            Math.max(0, Math.min(screen.availHeight - window.innerHeight,
+                                 window.screenY))
+          );
         </script>
       </body>
     </html>`,
