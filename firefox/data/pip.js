@@ -1,20 +1,20 @@
 function addButton() {
-  var controls = document.getElementsByClassName('ytp-right-controls')[0];
+  let controls = document.getElementsByClassName('ytp-right-controls')[0];
 
   if (!controls)
     return false;
 
-  var button = document.createElement('button');
+  let button = document.createElement('button');
   button.className = 'ytp-button'
   button.title = 'Picture-in-picture'
 
-  var svgNS = 'http://www.w3.org/2000/svg';
+  let svgNS = 'http://www.w3.org/2000/svg';
 
-  var svg = document.createElementNS(svgNS, 'svg');
+  let svg = document.createElementNS(svgNS, 'svg');
   svg.setAttribute('width', '100%');
   svg.setAttribute('height', '100%');
 
-  var text = document.createElementNS(svgNS, 'text');
+  let text = document.createElementNS(svgNS, 'text');
   text.textContent = 'PiP';
   text.setAttribute('fill', 'white');
   text.setAttribute('x', '50%');
@@ -55,6 +55,6 @@ if (!addButton()) {
       });  
     });
     observer.observe(player, {childList: true, subtree: true});
-    setTimeout(function(){ observer.disconnect(); }, 10000);
+    setTimeout(function() { observer.disconnect(); }, 10000);
   }
 }

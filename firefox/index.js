@@ -1,13 +1,13 @@
 const { PageMod } = require('sdk/page-mod');
 const { open } = require('sdk/window/utils');
-const { window: { screen }} = require('sdk/addon/window');
+const { window: { screen } } = require('sdk/addon/window');
 
 const windowWidth = 448;
 const windowHeight = 273;
 const resizeFactor = 1.1;
 
 function getVideoHTML(videoId, time) {
-  var time = Math.round(time);
+  time = Math.round(time);
   return `<iframe id="ytplayer" type="text/html"\
     width="${windowWidth}" height="${windowHeight}"\
     src="https://www.youtube.com/embed/${videoId}?autoplay=1&start=${time}"\
@@ -58,9 +58,9 @@ function openVideo(videoId, time) {
         </div>
         ${getVideoHTML(videoId, time)}
         <script>
-          var resizeFactor = ${resizeFactor};
-          var isDragging = false;
-          var startX, startY;
+          let resizeFactor = ${resizeFactor};
+          let isDragging = false;
+          let startX, startY;
           controls.onmousedown = function(e) {
             isDragging = true;
             startX = e.pageX, startY = e.pageY;
