@@ -1,7 +1,7 @@
 {
   "title": "PiP Video",
   "name": "pip-vid",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "PiP for YouTube videos.",
   "main": "index.js",
   "author": "Mohamed Akram",
