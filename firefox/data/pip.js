@@ -26,6 +26,7 @@ function addButton() {
   button.appendChild(svg);
 
   button.onclick = function() {
+    button.style.cursor = 'progress';
     let player = document.getElementById('movie_player').wrappedJSObject;
     player.pauseVideo();
     self.port.emit('pip', {videoId: player.getVideoData()['video_id'],
@@ -34,6 +35,8 @@ function addButton() {
   };
 
   controls.appendChild(button);
+
+  self.port.on('done', function() { button.style.cursor = ''; });
 
   return true;
 }

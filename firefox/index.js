@@ -106,9 +106,14 @@ PageMod({
   include: 'https://www.youtube.com/*',
   contentScriptFile: './pip.js',
   onAttach: function(worker) {
+    let video = null;
     worker.port.on('pip', function(videoInfo) {
       let { videoId, time } = videoInfo;
-      openVideo(videoId, time);
+      let isNew = !video || video.closed;
+      video = openVideo(videoId, time);
+      let callback = function() { worker.port.emit('done'); };
+      if (isNew) video.onload = callback;
+      else video.onunload = callback;
     });
   }
 });
