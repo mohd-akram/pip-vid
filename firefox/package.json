@@ -1,8 +1,8 @@
 {
   "title": "PiP Video",
   "name": "pip-vid",
-  "version": "0.0.2",
-  "description": "PiP for YouTube videos.",
+  "version": "0.1.0",
+  "description": "Picture-in-picture for YouTube videos.",
   "main": "index.js",
   "author": "Mohamed Akram",
   "engines": {
