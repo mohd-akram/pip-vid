@@ -13,7 +13,7 @@ function getVideoHTML(videoId, time) {
 
 function openVideo(videoId, time, width, height) {
   let aspectRatio = width / height;
-  width = 432;
+  width = aspectRatio > 1 ? 432 : 350;
   height = width / aspectRatio;
 
   return open(
