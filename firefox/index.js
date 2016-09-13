@@ -64,13 +64,22 @@ function openVideo(videoId, time, width, height) {
         </div>
         ${getVideoHTML(videoId, time)}
         <script>
-          let resizeFactor = ${resizeFactor};
           let isDragging = false;
           let startX, startY;
           controls.onmousedown = function(e) {
             isDragging = true;
             startX = e.pageX, startY = e.pageY;
           };
+          document.onmousemove = function(e) {
+            if (isDragging) {
+              window.moveTo(e.screenX - startX, e.screenY - startY);
+            }
+          };
+          document.onmouseup = function() {
+            isDragging = false;
+          };
+
+          let resizeFactor = ${resizeFactor};
           increase.onclick = function() {
             window.resizeTo(window.outerWidth * resizeFactor,
                             window.outerHeight * resizeFactor);
@@ -83,26 +92,29 @@ function openVideo(videoId, time, width, height) {
             window.moveTo(screen.availWidth - window.outerWidth,
                           screen.availHeight - window.outerHeight);
           };
-          document.onmousemove = function(e) {
-            if (isDragging) {
-              window.moveTo(e.screenX - startX, e.screenY - startY);
-            }
-          };
-          document.onmouseup = function() {
-            isDragging = false;
-          };
+
+          let snapped = (
+            window.screenX == screen.availWidth - window.outerWidth &&
+            window.screenY == screen.availHeight - window.outerHeight
+          );
+
           let aspectRatio = ${aspectRatio};
           let area = window.outerWidth * window.outerHeight;
           let width = Math.sqrt(area * aspectRatio);
           let height = width / aspectRatio;
           width = Math.round(width), height = Math.round(height);
+
           window.resizeTo(width, height);
-          window.moveTo(
-            Math.max(0, Math.min(window.screenX,
-                                 screen.availWidth - window.outerWidth)),
-            Math.max(0, Math.min(window.screenY,
-                                 screen.availHeight - window.outerHeight))
-          );
+
+          if (snapped)
+            snap.onclick();
+          else
+            window.moveTo(
+              Math.max(0, Math.min(window.screenX,
+                                   screen.availWidth - window.outerWidth)),
+              Math.max(0, Math.min(window.screenY,
+                                   screen.availHeight - window.outerHeight))
+            );
         </script>
       </body>
     </html>`,
