@@ -68,7 +68,7 @@ function openVideo(videoId, time, width, height) {
           let startX, startY;
           controls.onmousedown = function(e) {
             isDragging = true;
-            startX = e.pageX, startY = e.pageY;
+            startX = e.clientX, startY = e.clientY;
           };
           document.onmousemove = function(e) {
             if (isDragging) {
@@ -94,8 +94,8 @@ function openVideo(videoId, time, width, height) {
           };
 
           let snapped = (
-            window.screenX == screen.availWidth - window.outerWidth &&
-            window.screenY == screen.availHeight - window.outerHeight
+            (screen.availWidth - window.outerWidth) - window.screenX < 2 &&
+            (screen.availHeight - window.outerHeight) - window.screenY < 2
           );
 
           let aspectRatio = ${aspectRatio};
@@ -125,7 +125,7 @@ function openVideo(videoId, time, width, height) {
         width: width,
         height: height,
         popup: true,
-        // Window position is off by one
+        // Window position can be off by one
         top: screen.availHeight - height + 1,
         left: screen.availWidth - width + 1
       }
