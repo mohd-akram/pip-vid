@@ -2,7 +2,7 @@ const { PageMod } = require('sdk/page-mod');
 const { open } = require('sdk/window/utils');
 const { window: { screen } } = require('sdk/addon/window');
 
-const resizeFactor = 1.1;
+const resizeFactor = 1.15;
 
 function getVideoHTML(videoId, time) {
   time = Math.round(time);
