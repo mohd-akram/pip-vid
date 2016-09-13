@@ -71,22 +71,25 @@ function openVideo(videoId, time, width, height) {
             startX = e.clientX, startY = e.clientY;
           };
           document.onmousemove = function(e) {
-            if (isDragging) {
+            if (isDragging)
               window.moveTo(e.screenX - startX, e.screenY - startY);
-            }
           };
           document.onmouseup = function() {
             isDragging = false;
           };
 
+          let aspectRatio = ${aspectRatio};
           let resizeFactor = ${resizeFactor};
+
           increase.onclick = function() {
-            window.resizeTo(window.outerWidth * resizeFactor,
-                            window.outerHeight * resizeFactor);
+            let width = window.outerWidth * resizeFactor;
+            window.resizeTo(Math.round(width),
+                            Math.round(width / aspectRatio));
           };
           decrease.onclick = function() {
-            window.resizeTo(window.outerWidth / resizeFactor,
-                            window.outerHeight / resizeFactor);
+            let width = window.outerWidth / resizeFactor;
+            window.resizeTo(Math.round(width),
+                            Math.round(width / aspectRatio));
           };
           snap.onclick = function() {
             window.moveTo(screen.availWidth - window.outerWidth,
@@ -98,7 +101,6 @@ function openVideo(videoId, time, width, height) {
             (screen.availHeight - window.outerHeight) - window.screenY < 2
           );
 
-          let aspectRatio = ${aspectRatio};
           let area = window.outerWidth * window.outerHeight;
           let width = Math.sqrt(area * aspectRatio);
           let height = width / aspectRatio;
