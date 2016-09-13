@@ -13,8 +13,13 @@ function getVideoHTML(videoId, time) {
 
 function openVideo(videoId, time, width, height) {
   let aspectRatio = width / height;
-  width = aspectRatio > 1 ? 432 : 350;
+
+  // Window dimensions for a 16:9 video
+  let area = 432 * 243;
+  // Width should be at least 350 so that YouTube volume control is shown
+  width = Math.max(350, Math.sqrt(area * aspectRatio));
   height = width / aspectRatio;
+  width = Math.round(width), height = Math.round(height);
 
   return open(
     `data:text/html;charset=utf-8,
@@ -67,16 +72,16 @@ function openVideo(videoId, time, width, height) {
             startX = e.pageX, startY = e.pageY;
           };
           increase.onclick = function() {
-            window.resizeTo(window.innerWidth * resizeFactor,
-                            window.innerHeight * resizeFactor);
+            window.resizeTo(window.outerWidth * resizeFactor,
+                            window.outerHeight * resizeFactor);
           };
           decrease.onclick = function() {
-            window.resizeTo(window.innerWidth / resizeFactor,
-                            window.innerHeight / resizeFactor);
+            window.resizeTo(window.outerWidth / resizeFactor,
+                            window.outerHeight / resizeFactor);
           };
           snap.onclick = function() {
-            window.moveTo(screen.availWidth - window.innerWidth,
-                          screen.availHeight - window.innerHeight);
+            window.moveTo(screen.availWidth - window.outerWidth,
+                          screen.availHeight - window.outerHeight);
           };
           document.onmousemove = function(e) {
             if (isDragging) {
@@ -86,13 +91,17 @@ function openVideo(videoId, time, width, height) {
           document.onmouseup = function() {
             isDragging = false;
           };
-          window.resizeTo(window.innerWidth,
-                          window.innerWidth / ${aspectRatio});
+          let aspectRatio = ${aspectRatio};
+          let area = window.outerWidth * window.outerHeight;
+          let width = Math.sqrt(area * aspectRatio);
+          let height = width / aspectRatio;
+          width = Math.round(width), height = Math.round(height);
+          window.resizeTo(width, height);
           window.moveTo(
-            Math.max(0, Math.min(screen.availWidth - window.innerWidth,
-                                 window.screenX)),
-            Math.max(0, Math.min(screen.availHeight - window.innerHeight,
-                                 window.screenY))
+            Math.max(0, Math.min(window.screenX,
+                                 screen.availWidth - window.outerWidth)),
+            Math.max(0, Math.min(window.screenY,
+                                 screen.availHeight - window.outerHeight))
           );
         </script>
       </body>
@@ -104,8 +113,9 @@ function openVideo(videoId, time, width, height) {
         width: width,
         height: height,
         popup: true,
-        top: screen.availHeight - height,
-        left: screen.availWidth - width
+        // Window position is off by one
+        top: screen.availHeight - height + 1,
+        left: screen.availWidth - width + 1
       }
     }
   );
