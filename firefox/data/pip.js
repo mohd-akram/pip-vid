@@ -48,15 +48,9 @@ function addButton() {
 }
 
 if (player && !addButton()) {
-  let observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-      mutation.addedNodes.forEach(function(node) {
-        if (node.classList.contains('html5-video-player')) {
-          observer.disconnect();
-          addButton();
-        }
-      });
-    });  
+  let observer = new MutationObserver(function() {
+    if (addButton())
+      observer.disconnect();
   });
   observer.observe(player, {childList: true, subtree: true});
   setTimeout(function() { observer.disconnect(); }, 10000);
