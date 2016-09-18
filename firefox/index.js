@@ -1,18 +1,20 @@
 const { PageMod } = require('sdk/page-mod');
 const { open } = require('sdk/window/utils');
 const { window: { screen } } = require('sdk/addon/window');
+const cm = require('sdk/context-menu');
+const urlParser = require('js-video-url-parser');
 
 const resizeFactor = 1.15;
 
 function getVideoHTML(videoId, time) {
-  time = Math.round(time);
+  time = Math.round(time || 0);
   return `<iframe id="ytplayer" type="text/html"\
     src="https://www.youtube.com/embed/${videoId}?autoplay=1&start=${time}"\
     frameborder="0" allowfullscreen></iframe>`
 }
 
 function openVideo(videoId, time, width, height) {
-  let aspectRatio = width / height;
+  let aspectRatio = width && height ? width / height : 16/9;
 
   // Window dimensions for a 16:9 video
   let area = 432 * 243;
@@ -149,5 +151,26 @@ PageMod({
       if (isNew) video.onload = callback;
       else video.onunload = callback;
     });
+  }
+});
+
+cm.Item({
+  label: 'Open in PiP',
+  context: cm.PredicateContext(function(context) {
+    if (!context.linkURL)
+      return false;
+    let videoInfo = urlParser.parse(context.linkURL);
+    return Boolean(videoInfo && videoInfo.provider == 'youtube');
+  }),
+  contentScript: `
+    self.on('click', function(node) {
+      self.postMessage(node.href || node.closest('a').href);
+    });
+  `,
+  onMessage: function(url) {
+    let videoInfo = urlParser.parse(url);
+    if (videoInfo && videoInfo.provider == 'youtube') {
+      video = openVideo(videoInfo.id, (videoInfo.params || {}).start);
+    }
   }
 });
