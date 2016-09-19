@@ -1,7 +1,8 @@
+const self = require('sdk/self');
 const { PageMod } = require('sdk/page-mod');
 const { open } = require('sdk/window/utils');
 const { window: { screen } } = require('sdk/addon/window');
-const cm = require('sdk/context-menu');
+const contextMenu = require('sdk/context-menu');
 const urlParser = require('js-video-url-parser');
 
 const resizeFactor = 1.15;
@@ -154,9 +155,11 @@ PageMod({
   }
 });
 
-cm.Item({
-  label: 'Open in PiP',
-  context: cm.PredicateContext(function(context) {
+contextMenu.Item({
+  label: 'Open Video in PiP Window',
+  image: self.data.url('icon.png'),
+  accesskey: 'd',
+  context: contextMenu.PredicateContext(function(context) {
     if (!context.linkURL)
       return false;
     let videoInfo = urlParser.parse(context.linkURL);
