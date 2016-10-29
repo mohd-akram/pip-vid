@@ -16,6 +16,6 @@
     "multiprocess": true
   },
   "dependencies": {
-    "js-video-url-parser": "^0.2.0"
+    "js-video-url-parser": "^0.2.3"
   }
 }
