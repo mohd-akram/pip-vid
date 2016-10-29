@@ -113,7 +113,7 @@ function openVideo(videoId, time, width, height) {
 
           if (snapped)
             snap.onclick();
-          else
+          else if (window.screenX || window.screenY)
             window.moveTo(
               Math.max(0, Math.min(window.screenX,
                                    screen.availWidth - window.outerWidth)),
