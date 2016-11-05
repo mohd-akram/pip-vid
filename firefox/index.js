@@ -7,14 +7,15 @@ const urlParser = require('js-video-url-parser');
 
 const resizeFactor = 1.15;
 
-function getVideoHTML(videoId, time) {
+function getVideoHTML(videoId, listId, time) {
   time = Math.round(time || 0);
-  return `<iframe id="ytplayer" type="text/html"\
-    src="https://www.youtube.com/embed/${videoId}?autoplay=1&start=${time}"\
-    frameborder="0" allowfullscreen></iframe>`
+  let url = `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${time}`
+  if (listId) url += `&list=${listId}`;
+  return `<iframe id="ytplayer" type="text/html" src="${url}" \
+                  frameborder="0" allowfullscreen></iframe>`
 }
 
-function openVideo(videoId, time, width, height) {
+function openVideo(videoId, listId, time, width, height) {
   let aspectRatio = width && height ? width / height : 16/9;
 
   // Window dimensions for a 16:9 video
@@ -65,7 +66,7 @@ function openVideo(videoId, time, width, height) {
           <span id="decrease">%26%23x2212;</span>
           <span id="snap">%26%23x2198;</span>
         </div>
-        ${getVideoHTML(videoId, time)}
+        ${getVideoHTML(videoId, listId, time)}
         <script>
           let isDragging = false;
           let startX, startY;
@@ -145,9 +146,9 @@ PageMod({
   contentScriptFile: './pip.js',
   onAttach: function(worker) {
     worker.port.on('pip', function(videoInfo) {
-      let { videoId, time, width, height } = videoInfo;
+      let { videoId, listId, time, width, height } = videoInfo;
       let isNew = !video || video.closed;
-      video = openVideo(videoId, time, width, height);
+      video = openVideo(videoId, listId, time, width, height);
       let callback = function() { worker.port.emit('done'); };
       if (isNew) video.onload = callback;
       else video.onunload = callback;
@@ -173,7 +174,8 @@ contextMenu.Item({
   onMessage: function(url) {
     let videoInfo = urlParser.parse(url);
     if (videoInfo && videoInfo.provider == 'youtube') {
-      video = openVideo(videoInfo.id, (videoInfo.params || {}).start);
+      video = openVideo(videoInfo.id, videoInfo.list,
+                        (videoInfo.params || {}).start);
     }
   }
 });
