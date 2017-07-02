@@ -9,17 +9,18 @@ const resizeFactor = 1.15;
 
 function getVideoHTML(videoId, listId, time) {
   time = Math.round(time || 0);
-  let url = `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${time}`
+  let url =
+    `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${time}`;
   if (listId) url += `&list=${listId}`;
-  return `<iframe id="ytplayer" type="text/html" src="${url}" \
-                  frameborder="0" allowfullscreen></iframe>`
+  return `<iframe id="ytplayer" type="text/html" src="${url}"
+                  frameborder="0" allowfullscreen></iframe>`;
 }
 
 function openVideo(videoId, listId, time, width, height) {
-  let aspectRatio = width && height ? width / height : 16/9;
+  const aspectRatio = width && height ? width / height : 16/9;
 
   // Window dimensions for a 16:9 video
-  let area = 432 * 243;
+  const area = 432 * 243;
   // Width should be at least 350 so that YouTube volume control is shown
   width = Math.max(350, Math.sqrt(area * aspectRatio));
   height = width / aspectRatio;
@@ -70,42 +71,42 @@ function openVideo(videoId, listId, time, width, height) {
         <script>
           let isDragging = false;
           let startX, startY;
-          controls.onmousedown = function(e) {
+          controls.onmousedown = e => {
             isDragging = true;
             startX = e.clientX, startY = e.clientY;
           };
-          document.onmousemove = function(e) {
+          document.onmousemove = e => {
             if (isDragging)
               window.moveTo(e.screenX - startX, e.screenY - startY);
           };
-          document.onmouseup = function() {
+          document.onmouseup = () => {
             isDragging = false;
           };
 
-          let aspectRatio = ${aspectRatio};
-          let resizeFactor = ${resizeFactor};
+          const aspectRatio = ${aspectRatio};
+          const resizeFactor = ${resizeFactor};
 
-          increase.onclick = function() {
-            let width = window.outerWidth * resizeFactor;
+          increase.onclick = () => {
+            const width = window.outerWidth * resizeFactor;
             window.resizeTo(Math.round(width),
                             Math.round(width / aspectRatio));
           };
-          decrease.onclick = function() {
-            let width = window.outerWidth / resizeFactor;
+          decrease.onclick = () => {
+            const width = window.outerWidth / resizeFactor;
             window.resizeTo(Math.round(width),
                             Math.round(width / aspectRatio));
           };
-          snap.onclick = function() {
+          snap.onclick = () => {
             window.moveTo(screen.availWidth - window.outerWidth,
                           screen.availHeight - window.outerHeight);
           };
 
-          let snapped = (
+          const snapped = (
             (screen.availWidth - window.outerWidth) - window.screenX < 2 &&
             (screen.availHeight - window.outerHeight) - window.screenY < 2
           );
 
-          let area = window.outerWidth * window.outerHeight;
+          const area = window.outerWidth * window.outerHeight;
           let width = Math.sqrt(area * aspectRatio);
           let height = width / aspectRatio;
           width = Math.round(width), height = Math.round(height);
@@ -144,12 +145,12 @@ let video = null;
 PageMod({
   include: 'https://www.youtube.com/*',
   contentScriptFile: './pip.js',
-  onAttach: function(worker) {
-    worker.port.on('pip', function(videoInfo) {
-      let { videoId, listId, time, width, height } = videoInfo;
-      let isNew = !video || video.closed;
+  onAttach: worker => {
+    worker.port.on('pip', videoInfo => {
+      const { videoId, listId, time, width, height } = videoInfo;
+      const isNew = !video || video.closed;
       video = openVideo(videoId, listId, time, width, height);
-      let callback = function() { worker.port.emit('done'); };
+      const callback = () => worker.port.emit('done');
       if (isNew) video.onload = callback;
       else video.onunload = callback;
     });
@@ -160,19 +161,19 @@ contextMenu.Item({
   label: 'Open Video in PiP Window',
   image: self.data.url('icon.png'),
   accesskey: 'd',
-  context: contextMenu.PredicateContext(function(context) {
+  context: contextMenu.PredicateContext(context => {
     if (!context.linkURL)
       return false;
-    let videoInfo = urlParser.parse(context.linkURL);
+    const videoInfo = urlParser.parse(context.linkURL);
     return Boolean(videoInfo && videoInfo.provider == 'youtube');
   }),
   contentScript: `
-    self.on('click', function(node) {
+    self.on('click', node => {
       self.postMessage(node.href || node.closest('a').href);
     });
   `,
-  onMessage: function(url) {
-    let videoInfo = urlParser.parse(url);
+  onMessage: url => {
+    const videoInfo = urlParser.parse(url);
     if (videoInfo && videoInfo.provider == 'youtube') {
       video = openVideo(videoInfo.id, videoInfo.list,
                         (videoInfo.params || {}).start);
