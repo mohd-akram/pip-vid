@@ -3,7 +3,7 @@ let player = document.getElementById('player');
 function addButton() {
   let controls = player.getElementsByClassName('ytp-right-controls')[0];
 
-  if (!controls)
+  if (!controls || !controls.offsetParent)
     return false;
 
   let button = document.createElement('button');
@@ -62,5 +62,4 @@ if (player && !addButton()) {
       observer.disconnect();
   });
   observer.observe(player, {childList: true, subtree: true});
-  setTimeout(function() { observer.disconnect(); }, 10000);
 }
