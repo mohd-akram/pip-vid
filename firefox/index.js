@@ -3,6 +3,7 @@ const { PageMod } = require('sdk/page-mod');
 const { open } = require('sdk/window/utils');
 const { window: { screen } } = require('sdk/addon/window');
 const contextMenu = require('sdk/context-menu');
+const ss = require('sdk/simple-storage');
 const urlParser = require('js-video-url-parser');
 
 const resizeFactor = 1.15;
@@ -19,12 +20,20 @@ function getVideoHTML(videoId, listId, time) {
 function openVideo(videoId, listId, time, width, height) {
   const aspectRatio = width && height ? width / height : 16/9;
 
+  const windowSize = ss.storage.windowSize;
+
   // Window dimensions for a 16:9 video
-  const area = 432 * 243;
+  const area = windowSize ? windowSize.width * windowSize.height : 432 * 243;
   // Width should be at least 350 so that YouTube volume control is shown
   width = Math.max(350, Math.sqrt(area * aspectRatio));
   height = width / aspectRatio;
   width = Math.round(width), height = Math.round(height);
+
+  const windowPosition = ss.storage.windowPosition || {
+    // Window position can be off by one
+    x: screen.availWidth - width + 1,
+    y: screen.availHeight - height + 1,
+  };
 
   return open(
     `data:text/html;charset=utf-8,
@@ -132,15 +141,19 @@ function openVideo(videoId, listId, time, width, height) {
         width: width,
         height: height,
         popup: true,
-        // Window position can be off by one
-        top: screen.availHeight - height + 1,
-        left: screen.availWidth - width + 1
+        left: windowPosition.x,
+        top: windowPosition.y
       }
     }
   );
 }
 
 let video = null;
+
+function saveWindowBounds() {
+  ss.storage.windowPosition = {x: video.screenX, y: video.screenY};
+  ss.storage.windowSize = {width: video.outerWidth, height: video.outerHeight};
+};
 
 PageMod({
   include: 'https://www.youtube.com/*',
@@ -153,6 +166,7 @@ PageMod({
       const callback = () => worker.port.emit('done');
       if (isNew) video.onload = callback;
       else video.onunload = callback;
+      video.onbeforeunload = saveWindowBounds;
     });
   }
 });
@@ -177,6 +191,7 @@ contextMenu.Item({
     if (videoInfo && videoInfo.provider == 'youtube') {
       video = openVideo(videoInfo.id, videoInfo.list,
                         (videoInfo.params || {}).start);
+      video.onbeforeunload = saveWindowBounds;
     }
   }
 });
