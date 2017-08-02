@@ -26,13 +26,13 @@ function openVideo(videoId, listId, time, width, height) {
   const area = windowSize ? windowSize.width * windowSize.height : 432 * 243;
   // Width should be at least 350 so that YouTube volume control is shown
   width = Math.max(350, Math.sqrt(area * aspectRatio));
-  height = width / aspectRatio;
-  width = Math.round(width), height = Math.round(height);
+  width = Math.round(width);
+  height = Math.round(width / aspectRatio);
 
   const windowPosition = ss.storage.windowPosition || {
     // Window position can be off by one
     x: screen.availWidth - width + 1,
-    y: screen.availHeight - height + 1,
+    y: screen.availHeight - height + 1
   };
 
   return open(
@@ -138,9 +138,9 @@ function openVideo(videoId, listId, time, width, height) {
     {
       name: 'PiP',
       features: {
-        width: width,
-        height: height,
         popup: true,
+        width,
+        height,
         left: windowPosition.x,
         top: windowPosition.y
       }
@@ -153,7 +153,7 @@ let video = null;
 function saveWindowBounds() {
   ss.storage.windowPosition = {x: video.screenX, y: video.screenY};
   ss.storage.windowSize = {width: video.outerWidth, height: video.outerHeight};
-};
+}
 
 PageMod({
   include: 'https://www.youtube.com/*',
